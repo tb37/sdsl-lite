@@ -24,26 +24,26 @@ class temp_write_read_buffer
 
     private:
 
-        buffer_type 		m_buf; // buffer for the data
-        size_type   		m_buf_size; // size of the buffer
-        std::string 		m_file_name; // filename for the file holding
+        buffer_type   m_buf; // buffer for the data
+        size_type     m_buf_size; // size of the buffer
+        std::string   m_file_name; // filename for the file holding
         // the data which does not fit in the buffer
-        size_type 			m_in_buf_idx;// current index in the buffer
-        size_type			m_buf_idx;// index of the current buffer
-        size_type			m_buf_cnt;// number of buffers written to disk
-        osfstream			m_out;		 // file out stream
-        isfstream			m_in;		 // file in stream
-        bool				m_output_exists; // if there exists output to the file
-        size_type			m_r;// remaining entries in the buffer
-        size_type			m_last_block_size; // size of the last block written to disk
-        static size_t		m_buffer_id;
+        size_type     m_in_buf_idx;// current index in the buffer
+        size_type     m_buf_idx;// index of the current buffer
+        size_type     m_buf_cnt;// number of buffers written to disk
+        osfstream     m_out;    // file out stream
+        isfstream     m_in;     // file in stream
+        bool          m_output_exists; // if there exists output to the file
+        size_type     m_r;// remaining entries in the buffer
+        size_type     m_last_block_size; // size of the last block written to disk
+        static size_t m_buffer_id;
 
     public:
 
         //! Constructor
         /*! \param buf_size The size of the buffer.
-         *	\param width	The width of the integers if template parameter int_width=0.
-         *	\param dir		Directory in which the temporary file is stored.
+         *    \param width  The width of the integers if template parameter int_width=0.
+         *    \param dir    Directory in which the temporary file is stored.
          */
         // TODO: should pass a temporary file NOT a directory
         temp_write_read_buffer(size_type buf_size, uint8_t width, std::string dir=".") {
@@ -64,10 +64,10 @@ class temp_write_read_buffer
                 m_out.close();     // close it
             }
             if (m_in.is_open()) { // if in buffer is still open
-                m_in.close();	  // close it
+                m_in.close();      // close it
             }
             if (m_output_exists)  // if we have written output to a file
-                remove(m_file_name);   // delete it
+                sdsl::remove(m_file_name);   // delete it
         }
 
         value_type operator<<(value_type x) {
@@ -86,8 +86,8 @@ class temp_write_read_buffer
 
         void write_close() {
             if (m_buf_cnt > 0) {
-                m_buf.serialize(m_out);    // write last buffer to disk
-                m_out.close(); // close stream
+                m_buf.serialize(m_out); // write last buffer to disk
+                m_out.close();          // close stream
                 m_last_block_size = m_in_buf_idx;
                 ++m_buf_cnt;
                 m_out.close();
@@ -114,7 +114,7 @@ class temp_write_read_buffer
 
         bool operator>>(value_type& x) {
             if (m_in_buf_idx >= m_r) {  // load next buffer
-//			std::cout<< "m_in_buf_idx = " << m_in_buf_idx << " m_r "<< m_r <<" m_buf_idx = "<< m_buf_idx<<" m_buf_cnt = "<< m_buf_cnt << std::endl;
+//            std::cout<< "m_in_buf_idx = " << m_in_buf_idx << " m_r "<< m_r <<" m_buf_idx = "<< m_buf_idx<<" m_buf_cnt = "<< m_buf_cnt << std::endl;
                 if (m_buf_idx < m_buf_cnt) {
                     ++m_buf_idx; // increase buffer index
                     m_in_buf_idx = 0; // reset in buffer index

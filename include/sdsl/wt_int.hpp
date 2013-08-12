@@ -114,9 +114,9 @@ class wt_int
         };
 
         //! Semi-external constructor
-        /*! \param buf         File buffer of the int_vector for which the wt_int should be build.
-         *  \param size        Size of the prefix of v, which should be indexed.
-         *  \param max_depth   Maximal depth of the wavelet tree. If set to 0, determined automatically.
+        /*! \param buf       File buffer of the int_vector for which the wt_int should be build.
+         *  \param size      Size of the prefix of v, which should be indexed.
+         *  \param max_depth Maximal depth of the wavelet tree. If set to 0, determined automatically.
          *    \par Time complexity
          *        \f$ \Order{n\log|\Sigma|}\f$, where \f$n=size\f$
          *        I.e. we need \Order{n\log n} if rac is a permutation of 0..n-1.
@@ -163,16 +163,16 @@ class wt_int
             size_type tree_pos = 0;
             uint64_t tree_word = 0;
 
-            uint64_t        mask_old = 1ULL<<(m_max_depth);
+            uint64_t mask_old = 1ULL<<(m_max_depth);
             for (uint32_t k=0; k<m_max_depth; ++k) {
-                size_type          start     = 0;
-                const uint64_t    mask_new = 1ULL<<(m_max_depth-k-1);
+                size_type      start    = 0;
+                const uint64_t mask_new = 1ULL<<(m_max_depth-k-1);
                 do {
                     buf1.reset();
-                    size_type    i         = start;
-                    size_type    cnt0    =    0;
-                    uint64_t    start_value = (rac[i]&mask_old);
-                    uint64_t    x;
+                    size_type i    = start;
+                    size_type cnt0 =    0;
+                    uint64_t  start_value = (rac[i]&mask_old);
+                    uint64_t  x;
                     while (i < m_size and((x=rac[i])&mask_old)==start_value) {
                         if (x&mask_new) {
                             tree_word |= (1ULL << (tree_pos&0x3FULL));
