@@ -157,6 +157,10 @@ class wt_int
 
             std::string tree_out_buf_file_name = (dir+"/m_tree"+util::to_string(util::pid())+"_"+util::to_string(util::id()));
             osfstream tree_out_buf(tree_out_buf_file_name, std::ios::binary | std::ios::trunc | std::ios::out);   // open buffer for tree
+            {
+                bit_vector bv;
+                add_hash(bv, tree_out_buf);
+            }
             size_type bit_size = m_size*m_max_depth;
             tree_out_buf.write((char*) &bit_size, sizeof(bit_size));    // write size of bit_vector
 

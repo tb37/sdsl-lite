@@ -111,6 +111,10 @@ class wt_rlg
             std::string temp_file = text_buf.filename() + "_wt_rlg_" + util::to_string(util::pid()) + "_" + util::to_string(util::id());
             osfstream wt_out(temp_file, std::ios::binary | std::ios::trunc | std::ios::out);
             size_type bit_cnt=0;
+            {
+                int_vector<8> v;
+                add_hash(v, wt_out);
+            }
             wt_out.write((char*)&bit_cnt, sizeof(bit_cnt)); // initial dummy write
 
             m_b = bit_vector(size,0);
@@ -183,7 +187,7 @@ class wt_rlg
             m_b.resize(b_cnt);
             m_b_border.resize(level+1);
 
-            wt_out.seekp(0, std::ios::beg);
+            wt_out.seekp(8, std::ios::beg);
             bit_cnt = (2*pair0cnt)*8;
             wt_out.write((char*)&bit_cnt, sizeof(bit_cnt));
             wt_out.close();

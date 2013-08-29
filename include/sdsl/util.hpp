@@ -199,13 +199,19 @@ std::string to_string(const T& t, int w=1);
 
 //! Transforms the demangled class name of an object to a hash value.
 template<class T>
-std::string class_to_hash(const T&)
+uint64_t hashvalue_of_classname(const T&)
 {
     std::locale loc;
     const std::collate<char>& coll = std::use_facet<std::collate<char> >(loc);
     std::string name = sdsl::util::demangle2(typeid(T).name());
-    uint64_t my_hash = coll.hash(name.data(),name.data()+name.length());
-    return to_string(my_hash);
+    return coll.hash(name.data(),name.data()+name.length());
+}
+
+//! Transforms the demangled class name of an object to a hash value.
+template<class T>
+std::string class_to_hash(const T& t)
+{
+    return to_string(hashvalue_of_classname(t));
 }
 
 template<class T>

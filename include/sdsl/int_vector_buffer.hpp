@@ -45,7 +45,7 @@ class int_vector_buffer
         std::string         m_filename;
         int_vector<t_width> m_buffer;
         bool                m_need_to_write = false;
-        // length of int_vector header in bytes: 0 for plain, 8 for int_vector<t_width> (0 < t_width), 9 for int_vector<0>
+        // length of int_vector header in bytes: 0 for plain, 16 for int_vector<t_width> (0 < t_width), 17 for int_vector<0>
         uint64_t            m_offset     = 0;
         uint64_t            m_buffersize = 0;    // in elements! m_buffersize*width() must be a multiple of 8!
         uint64_t            m_size       = 0;    // size of int_vector_buffer
@@ -141,7 +141,7 @@ class int_vector_buffer
                 // is_plain is only allowed with width() in {8, 16, 32, 64}
                 assert(8==width() or 16==width() or 32==width() or 64==width());
             } else {
-                m_offset = t_width ? 8 : 9;
+                m_offset = t_width ? 16 : 17;
             }
 
             // Open file for IO
@@ -155,6 +155,9 @@ class int_vector_buffer
                     m_ifile.seekg(0, std::ios_base::end);
                     size = m_ifile.tellg()*8;
                 } else {
+                    uint64_t hash_value;
+                    read_member(hash_value, m_ifile);
+                    assert(hash_value == util::hashvalue_of_classname(m_buffer));
                     uint8_t width = 0;
                     int_vector<t_width>::read_header(size, width, m_ifile);
                     m_buffer.width(width);
@@ -321,6 +324,7 @@ class int_vector_buffer
                     if (0 < m_offset) { // in case of int_vector, write header and trailing zeros
                         uint64_t size = m_size*width();
                         m_ofile.seekp(0, std::ios::beg);
+                        add_hash(m_buffer, m_ofile);
                         int_vector<t_width>::write_header(size, width(), m_ofile);
                         assert(m_ofile.good());
                         uint64_t wb = (size+7)/8;

@@ -485,6 +485,13 @@ double size_in_mega_bytes(const T& t)
 }
 
 template<class T>
+void add_hash(const T& t, std::ostream& out)
+{
+    uint64_t hash_value = util::hashvalue_of_classname(t);
+    write_member(hash_value, out);
+}
+
+template<class T>
 bool store_to_file(const T& t, const std::string& file)
 {
     osfstream out(file, std::ios::binary | std::ios::trunc | std::ios::out);
@@ -494,6 +501,7 @@ bool store_to_file(const T& t, const std::string& file)
         }
         return false;
     }
+    add_hash(t, out);
     t.serialize(out);
     out.close();
     if (util::verbose) {
@@ -516,6 +524,12 @@ bool store_to_file(const int_vector<t_width>& v, const std::string& file, bool w
             std::cerr<<"INFO: store_to_file: `"<<file<<"`"<<std::endl;
         }
     }
+    if (write_fixed_as_variable) {
+        int_vector<0> variable_iv;
+        add_hash(variable_iv, out);
+    } else {
+        add_hash(v, out);
+    }
     v.serialize(out, nullptr, "", write_fixed_as_variable);
     out.close();
     return true;
@@ -528,6 +542,14 @@ bool load_from_file(T& v, const std::string& file)
     if (!in) {
         if (util::verbose) {
             std::cerr << "Could not load file `" << file << "`" << std::endl;
+        }
+        return false;
+    }
+    uint64_t hash_value;
+    read_member(hash_value, in);
+    if (hash_value != util::hashvalue_of_classname(v)) {
+        if (util::verbose) {
+            std::cerr << "File `" << file << "` is not an instance of the class `" << sdsl::util::demangle2(typeid(T).name()) << "`" << std::endl;
         }
         return false;
     }

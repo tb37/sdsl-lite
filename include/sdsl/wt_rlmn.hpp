@@ -129,6 +129,10 @@ class wt_rlmn
                                     + "_" + util::to_string(util::id());
             osfstream wt_out(temp_file, std::ios::binary | std::ios::trunc | std::ios::out);
             size_type bit_cnt=0;
+            {
+                int_vector<8> v;
+                add_hash(v, wt_out);
+            }
             wt_out.write((char*)&bit_cnt, sizeof(bit_cnt)); // initial dummy write
             {
                 // scope for bl and bf
@@ -146,7 +150,7 @@ class wt_rlmn
                     last_c = c;
                 }
 
-                wt_out.seekp(0, std::ios::beg);
+                wt_out.seekp(8, std::ios::beg);
                 wt_out.write((char*)&bit_cnt, sizeof(bit_cnt));
                 wt_out.close();
 
