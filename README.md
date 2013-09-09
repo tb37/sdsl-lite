@@ -24,7 +24,7 @@ The aim of the library is to provide basic and complex succinct
 data structure which are
   * easy to use (like the [STL][STL], which provides classical data structures),
   * capable of handling large inputs (yes, we support 64-bit),
-  * provide excellent performance in construction, and 
+  * provide excellent performance in construction
   * provide excellent operation performance 
 
 We used several techniques to reach the performance goals:
